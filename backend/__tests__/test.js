@@ -61,7 +61,7 @@ describe("/api/signup endpoint", () => {
     expect(response.body.message).toBe("Signed up successfully! Check your email to continue.");
   });
 
-  it("checks if after 2 sign up tere are 2 users in the db", async () => {
+  it("checks if after 2 sign ups there are 2 users in the db", async () => {
     const User = require("../models/user.model");
 
     await request.post("/api/signup").send({
