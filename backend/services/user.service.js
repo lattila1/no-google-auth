@@ -99,7 +99,8 @@ exports.signup = async (user) => {
   const subject = "Email confirmation";
   const text = `Hello ${newUser.username},\n\nopen the link to confirm your email:\n${emailConfirmationLink}`;
 
-  await sendEmail(to, subject, text);
+  console.log(emailConfirmationLink);
+  // await sendEmail(to, subject, text);
 };
 
 exports.login = async (data) => {
