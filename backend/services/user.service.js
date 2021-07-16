@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const getRandomCode = async () => {
-  const { randomBytes } = await import("crypto");
+  const { randomBytes } = require("crypto");
   return new Promise((resolve, reject) => {
     randomBytes(parseInt(process.env.CONFIRMATION_CODE_LENGTH / 2), (err, buffer) => {
       if (err) return reject(err);
