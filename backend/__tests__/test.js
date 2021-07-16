@@ -61,8 +61,6 @@ describe("/api/signup endpoint", () => {
   });
 
   it("checks if after 2 sign ups there are 2 users in the db", async () => {
-    const User = require("../models/user.model");
-
     await request.post("/api/signup").send({
       username: "asd",
       email: "asd@asd.asd",
@@ -75,6 +73,7 @@ describe("/api/signup endpoint", () => {
       password: "asd2",
     });
 
+    const User = require("../models/user.model");
     const users = await User.find({});
     expect(users.length).toBe(2);
   });
