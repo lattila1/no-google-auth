@@ -6,7 +6,6 @@ const mongoose = require("mongoose");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 let mongoServer;
 
-const User = require("../models/user.model");
 const databaseName = "noGoogleAuthTestDB";
 
 async function removeAllCollections() {
