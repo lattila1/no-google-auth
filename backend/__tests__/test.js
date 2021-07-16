@@ -60,4 +60,23 @@ describe("/api/signup endpoint", () => {
     expect(response.status).toBe(201);
     expect(response.body.message).toBe("Signed up successfully! Check your email to continue.");
   });
+
+  it("checks if after 2 sign up tere are 2 users in the db", async () => {
+    const User = require("../models/user.model");
+
+    await request.post("/api/signup").send({
+      username: "asd",
+      email: "asd@asd.asd",
+      password: "asd",
+    });
+
+    await request.post("/api/signup").send({
+      username: "asd2",
+      email: "asd2@asd.asd",
+      password: "asd2",
+    });
+
+    const users = await User.find({});
+    expect(users.length).toBe(2);
+  });
 });
