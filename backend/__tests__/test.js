@@ -35,32 +35,58 @@ afterEach(async () => {
   await removeAllCollections();
 });
 
+const User = require("../models/user.model");
+
 it("checks if Jest works", () => {
   expect(1).toBe(1);
 });
 
-describe("/api/check-availabilty endpoint", () => {
-  it("gets error if username or email isn't present", async () => {
+describe("/api/check-availability endpoint", () => {
+  it("gets error if both the username and email missing", async () => {
     const response = await request.get("/api/check-availability");
 
     expect(response.status).toBe(400);
     expect(response.body.message).toBe("Username or email required");
   });
-});
 
-describe("/api/signup endpoint", () => {
-  it("can signup", async () => {
-    const response = await request.post("/api/signup").send({
+  it("gets OK if username is available", async () => {
+    const response = await request.get("/api/check-availability?username=asd");
+
+    expect(response.status).toBe(200);
+    expect(response.body.message).toBe("OK");
+  });
+
+  it("gets error if username already in use", async () => {
+    await request.post("/api/signup").send({
       username: "asd",
       email: "asd@asd.asd",
       password: "asd",
     });
 
+    const response = await request.get("/api/check-availability?username=asd");
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe("Username already in use");
+  });
+});
+
+describe("/api/signup endpoint", () => {
+  it("puts the user in the db after signup with the given username and email", async () => {
+    const formData = {
+      username: "asd",
+      email: "asd@asd.asd",
+      password: "asd",
+    };
+    const response = await request.post("/api/signup").send(formData);
+
+    const user = await User.findOne({});
     expect(response.status).toBe(201);
     expect(response.body.message).toBe("Signed up successfully! Check your email to continue.");
+    expect(user.username).toBe(formData.username);
+    expect(user.email).toBe(formData.email);
   });
 
-  it("checks if after 2 sign ups there are 2 users in the db", async () => {
+  it("checks if after 2 signups there are 2 users in the db", async () => {
     await request.post("/api/signup").send({
       username: "asd",
       email: "asd@asd.asd",
@@ -73,8 +99,18 @@ describe("/api/signup endpoint", () => {
       password: "asd2",
     });
 
-    const User = require("../models/user.model");
     const users = await User.find({});
     expect(users.length).toBe(2);
+  });
+
+  it("gets error if try to signup with space in the username", async () => {
+    const response = await request.post("/api/signup").send({
+      username: "asd asd",
+      email: "asd@asd.asd",
+      password: "asd",
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe("Username must be alphanumeric and between 1-32 characters");
   });
 });
