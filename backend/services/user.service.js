@@ -99,7 +99,9 @@ exports.signup = async (user) => {
   const subject = "Email confirmation";
   const text = `Hello ${newUser.username},\n\nopen the link to confirm your email:\n${emailConfirmationLink}`;
 
-  console.log(emailConfirmationLink);
+  if (process.env.NODE_ENV !== "test") {
+    console.log(emailConfirmationLink);
+  }
   // await sendEmail(to, subject, text);
 };
 
