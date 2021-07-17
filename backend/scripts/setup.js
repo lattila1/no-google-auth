@@ -1,5 +1,5 @@
 require("dotenv").config();
-require("../database/connect")();
+require("../database/connect");
 const Word = require("../models/word.model");
 
 const initialWords = [
