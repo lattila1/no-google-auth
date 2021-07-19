@@ -72,21 +72,27 @@ describe("/api/check-availability endpoint", () => {
 
 describe("/api/signup endpoint", () => {
   it("puts the user in the db after signup with the given username and email", async () => {
+    // given
     const formData = {
       username: "asd",
       email: "asd@asd.asd",
       password: "asd",
     };
+
+    // when
     const response = await request.post("/api/signup").send(formData);
 
+    // then
     const user = await User.findOne({});
-    expect(response.status).toBe(201);
-    expect(response.body.message).toBe("Signed up successfully! Check your email to continue.");
     expect(user.username).toBe(formData.username);
     expect(user.email).toBe(formData.email);
+
+    expect(response.status).toBe(201);
+    expect(response.body.message).toBe("Signed up successfully! Check your email to continue.");
   });
 
   it("checks if after 2 signups there are 2 users in the db", async () => {
+    // given
     await request.post("/api/signup").send({
       username: "asd",
       email: "asd@asd.asd",
@@ -99,16 +105,35 @@ describe("/api/signup endpoint", () => {
       password: "asd2",
     });
 
+    // when
     const users = await User.find({});
+
+    // then
     expect(users.length).toBe(2);
   });
 
   it("gets error if try to signup with space in the username", async () => {
-    const response = await request.post("/api/signup").send({
+    const formData = {
       username: "asd asd",
       email: "asd@asd.asd",
       password: "asd",
-    });
+    };
+
+    const response = await request.post("/api/signup").send(formData);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe("Username must be alphanumeric and between 1-32 characters");
+  });
+
+  it("gets error if username already in use", async () => {
+    const formData = {
+      username: "asdasd",
+      email: "asd@asd.asd",
+      password: "asd",
+    };
+
+    await request.post("/api/signup").send(formData);
+    const response = await request.post("/api/signup").send(formData);
 
     expect(response.status).toBe(400);
     expect(response.body.message).toBe("Username must be alphanumeric and between 1-32 characters");
