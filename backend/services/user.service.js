@@ -81,9 +81,7 @@ exports.signup = async (user) => {
     await newUser.save();
   } catch (err) {
     if (err.name === "MongoError" && err.code === 11000) {
-      const field = Object.keys(err.keyPattern)[0];
-
-      if (field === "email") {
+      if (/index: email.*? dup key/.test(err.message)) {
         throw { message: "Email already in use", status: 400 };
       } else {
         throw { message: "Username already in use", status: 400 };

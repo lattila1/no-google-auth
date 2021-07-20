@@ -17,7 +17,11 @@ async function removeAllCollections() {
 }
 
 beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
+  mongoServer = await MongoMemoryServer.create({
+    instance: {
+      storageEngine: "wiredTiger",
+    },
+  });
   await mongoose.connect(mongoServer.getUri() + databaseName, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -136,6 +140,26 @@ describe("/api/signup endpoint", () => {
     const response = await request.post("/api/signup").send(formData);
 
     expect(response.status).toBe(400);
-    expect(response.body.message).toBe("Username must be alphanumeric and between 1-32 characters");
+    expect(response.body.message).toBe("Username already in use");
+  });
+
+  it("gets error if email already in use", async () => {
+    const formData1 = {
+      username: "asd1",
+      email: "asd@asd.asd",
+      password: "asd",
+    };
+
+    const formData2 = {
+      username: "asd2",
+      email: "asd@asd.asd",
+      password: "asd",
+    };
+
+    await request.post("/api/signup").send(formData1);
+    const response = await request.post("/api/signup").send(formData2);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe("Email already in use");
   });
 });
