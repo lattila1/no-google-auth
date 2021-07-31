@@ -18,8 +18,8 @@ async function removeAllCollections() {
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create({
-    instance: {
-      storageEngine: "wiredTiger",
+    binary: {
+      version: "4.4.6",
     },
   });
   await mongoose.connect(mongoServer.getUri() + databaseName, {
